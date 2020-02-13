@@ -4,12 +4,12 @@ module cpu
 	input 	reset,
 	
 	output 	[15:0] 	o_pc_addr,
-	output 			o_pc_rd,
+	output 		o_pc_rd,
 	input 	[15:0] 	i_pc_rddata,
 	
 	output 	[15:0] 	o_ldst_addr,
-	output 			o_ldst_rd,
-	output 			o_ldst_wr,
+	output 		o_ldst_rd,
+	output 		o_ldst_wr,
 	input 	[15:0] 	i_ldst_rddata,
 	output 	[15:0] 	o_ldst_wrdata,
 	
@@ -27,7 +27,7 @@ module cpu
 	
 	reg		[15:0]	IR;
 	
-	reg 	[15:0]	rf[7:0];
+	reg 		[15:0]	rf[7:0];
 	
 	reg		delayed; 			// used to record a delay on branch/mem instr 
 	reg		dummy_instr;		// used to ignore dummy instr preloaded after daleyed branch
@@ -41,7 +41,7 @@ module cpu
 	wire 	[15:0]	rf_Oy;
 	wire 	[15:0]	rf_wrdata;
 	wire 	[2:0]	rf_selwr;
-	wire 			rf_wr_en;
+	wire 		rf_wr_en;
 	
 	
 	wire 	[15:0]	IR_s_ext;
@@ -49,13 +49,13 @@ module cpu
 	wire	[2:0]	IR_Ry;
 	wire	[7:0]	IR_imm8;
 	wire	[10:0]	IR_imm11;
-	wire			IR_wr_en;
+	wire		IR_wr_en;
 	
-	wire 			pc_wr_en;
+	wire 		pc_wr_en;
 	
-	wire			mem_pc_rd;
+	wire		mem_pc_rd;
 
-	wire			NZ_wr_en;
+	wire		NZ_wr_en;
 
 	// ALUs
 	wire 	[15:0]	ALUout;
@@ -71,20 +71,19 @@ module cpu
 	wire	[15:0]	br_imm;
 	
 	// mem instr
-	wire	[2:0]		pc_mem_Ry;			
+	wire	[2:0]	pc_mem_Ry;			
 	wire	[15:0]	pld_Oy;				// preload Ry
-	wire				ldst_rd_en;
+	wire		ldst_rd_en;
 	
 	// logics
 	logic [15:0]	ALU_in1;
 	logic [15:0]	ALU_in2;
-	logic			ALU_op;
+	logic		ALU_op;
 	
-	logic 			pld_valid;
-	logic			pld_br;
-	logic			exe_br;
+	logic 		pld_valid;
+	logic		pld_br;
+	logic		exe_br;
 	
-
 
 
 	always_ff @ (posedge clk) begin
@@ -99,8 +98,8 @@ module cpu
 			rf[5]	<= 0;
 			rf[6]	<= 0;
 			rf[7]	<= 0;
-			N		<= 0;
-			Z		<= 0;
+			N	<= 0;
+			Z	<= 0;
 			IR 	<= 0;
 			
 			delayed <= 0;
@@ -181,14 +180,14 @@ module cpu
 		pld_br = 1'b0;			// branch in fetch stage
 	
 		if (delayed) exe_br = 	(IR[3:0] == 4'b1001 && Z == 1'b1) ||  			// jz
-								(IR[3:0] == 4'b1010 && N == 1'b1) ||  			// jn
-								(IR[3:0] == 4'b1000) || 							// j
-								(IR[3:0] == 4'b1100);
+					(IR[3:0] == 4'b1010 && N == 1'b1) ||  			// jn
+					(IR[3:0] == 4'b1000) || 				// j
+					(IR[3:0] == 4'b1100);
 												
-	   if (pld_valid) pld_br = 	(pc_rdvalid) && (i_pc_rddata[3:0] == 4'b1001 && Z == 1'b1) ||  			// jz
-								(i_pc_rddata[3:0] == 4'b1010 && N == 1'b1) ||  			// jn
-								(i_pc_rddata[3:0] == 4'b1000) || 						// j
-								(i_pc_rddata[3:0] == 4'b1100);
+	   if (pld_valid) pld_br = 	(pc_rdvalid) && (i_pc_rddata[3:0] == 4'b1001 && Z == 1'b1) ||  	// jz
+					(i_pc_rddata[3:0] == 4'b1010 && N == 1'b1) ||  			// jn
+					(i_pc_rddata[3:0] == 4'b1000) || 				// j
+					(i_pc_rddata[3:0] == 4'b1100);
 										
 
 		
@@ -196,7 +195,7 @@ module cpu
 
 
 	// *****************************************	
-	// 					ALU blocks
+	// 		ALU blocks
 	// *****************************************	
 	
 	// Execution ALU
@@ -210,7 +209,7 @@ module cpu
 
 	
 	// *****************************************
-	// 					wire assignment
+	// 		Wire Assignment
 	// *****************************************
 	
 	// mem wires
@@ -244,7 +243,7 @@ module cpu
 
 	
 	// *****************************************	
-	// 					branch blocks
+	// 		Branch Blocks
 	// *****************************************	
 	
 	// branch
@@ -257,7 +256,7 @@ module cpu
 	
 	
 	// *****************************************	
-	// 				mem instr blocks
+	// 		mem instr blocks
 	// *****************************************	
 	assign pc_mem_Ry = i_pc_rddata[10:8];
 	assign pld_Oy = (rf_wr_en && (pc_mem_Ry == IR_Rx || pc_mem_Ry == IR_Ry)) ? rf_wrdata : rf[pc_mem_Ry];	// if rf_wr_en and Rx is same, we need to read directly from rf_wrdata
@@ -266,7 +265,7 @@ module cpu
 	
 	
 	// *****************************************	
-	// 					I/O wires
+	// 		I/O wires
 	// *****************************************	
 	assign o_tb_regs[0] = rf[0];
 	assign o_tb_regs[1] = rf[1];
